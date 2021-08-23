@@ -47,3 +47,38 @@ jobs:
         npm test
       env:
         CI: true
+        
+  release:
+    if: ${{ github.ref == 'refs/heads/master' }}
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Install GitVersion
+      uses: gittools/actions/gitversion/setup@v0.9.7
+      with:
+          versionSpec: '5.x'
+
+    - name: Use GitVersion
+      id: gitversion
+      uses: gittools/actions/gitversion/execute@v0.9.7
+
+    - name: Download a Build Artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: binary
+
+    - name: Create a Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.gitversion.outputs.majorMinorPatch }}
+        release_name: Release ${{ steps.gitversion.outputs.majorMinorPatch }}
+        body: ${{ github.event.head_commit.message }}
