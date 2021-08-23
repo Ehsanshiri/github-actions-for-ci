@@ -27,8 +27,8 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-2016]
-        node-version: [12.x, 14.x]
+        os: [ubuntu-latest]
+        node-version: [12.x]
 
     steps:
 
@@ -67,11 +67,6 @@ jobs:
     - name: Use GitVersion
       id: gitversion
       uses: gittools/actions/gitversion/execute@v0.9.7
-
-    - name: Download a Build Artifact
-      uses: actions/download-artifact@v2
-      with:
-        name: binary
 
     - name: Create a Release
       id: create_release
